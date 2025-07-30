@@ -2,6 +2,7 @@ import "./App.css";
 import { useState, useRef } from "react";
 import CanvasPage from "./components/CanvasPage";
 import Toolbar from "./components/Toolbar";
+import Pages from "./components/Pages";
 
 function App() {
   const [currentTool, setCurrentTool] = useState("rect");
@@ -14,7 +15,6 @@ function App() {
   const [fontFamily, setFontFamily] = useState("Arial");
   const [history, setHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
-
   const [elements, setElements] = useState([]);
 
   return (
@@ -23,10 +23,10 @@ function App() {
         <h1 className="text-3xl font-bold text-center text-gray-800 mb-4">
           Drawing Canvas Editor
         </h1>
-        <div className="page-buttons">
-          <button onClick={() => setCurrentPageId(1)}>Page 1</button>
-          <button onClick={() => setCurrentPageId(2)}>Page 2</button>
-        </div>
+        <Pages
+          currentPageId={currentPageId}
+          setCurrentPageId={setCurrentPageId}
+        />
         <Toolbar
           currentTool={currentTool}
           setCurrentTool={setCurrentTool}
