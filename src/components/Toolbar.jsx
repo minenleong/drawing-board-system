@@ -40,6 +40,10 @@ function Toolbar({
   pageId,
   pages,
   setPages,
+  selectedId,
+  setSelectedId,
+  scale,
+  setScale,
 }) {
   const [anchorEl, setAnchorEl] = useState(null); //dropdown button
   const fontFamilies = ["Arial", "Courier New", "Georgia", "Times New Roman"];
@@ -86,6 +90,70 @@ function Toolbar({
     setElements(nextState);
     setHistoryIndex(newIndex);
   };
+
+  // Bring shape one layer forward
+  const bringForward = (id) => {
+    setElements((prev) => {
+      const index = prev.findIndex((el) => el.id === id);
+      if (index !== -1 && index < prev.length - 1) {
+        const newElements = [...prev];
+        const [item] = newElements.splice(index, 1);
+        newElements.splice(index + 1, 0, item);
+        return newElements;
+      }
+      return prev;
+    });
+  };
+
+  // Send shape one layer backward
+  const sendBackward = (id) => {
+    setElements((prev) => {
+      const index = prev.findIndex((el) => el.id === id);
+      if (index > 0) {
+        const newElements = [...prev];
+        const [item] = newElements.splice(index, 1);
+        newElements.splice(index - 1, 0, item);
+        return newElements;
+      }
+      return prev;
+    });
+  };
+
+  // Bring shape to very top
+  const bringToFront = (id) => {
+    setElements((prev) => {
+      const index = prev.findIndex((el) => el.id === id);
+      if (index !== -1 && index < prev.length - 1) {
+        const newElements = [...prev];
+        const [item] = newElements.splice(index, 1);
+        newElements.push(item);
+        return newElements;
+      }
+      return prev;
+    });
+  };
+
+  // Send shape to very bottom
+  const sendToBack = (id) => {
+    setElements((prev) => {
+      const index = prev.findIndex((el) => el.id === id);
+      if (index > 0) {
+        const newElements = [...prev];
+        const [item] = newElements.splice(index, 1);
+        newElements.unshift(item);
+        return newElements;
+      }
+      return prev;
+    });
+  };
+
+  const zoomIn = () => {
+    setScale((prev) => prev * 1.1);
+  };
+  const zoomOut = () => {
+    setScale((prev) => prev / 1.1);
+  };
+
   return (
     <Box
       sx={{
@@ -201,6 +269,20 @@ function Toolbar({
           <RedoIcon />
         </Button>
       </ButtonGroup>
+      {/* <br></br> */}
+      <ButtonGroup>
+        <Button onClick={() => bringForward(selectedId)}>Bring Forward</Button>
+        <Button onClick={() => sendBackward(selectedId)}>Send Backward</Button>
+        <Button onClick={() => bringToFront(selectedId)}>Bring to Front</Button>
+        <Button onClick={() => sendToBack(selectedId)}>
+          Send to Back
+        </Button>{" "}
+      </ButtonGroup>
+      <ButtonGroup>
+        <Button onClick={zoomIn}>+</Button>
+        <Button onClick={zoomOut}>-</Button>
+      </ButtonGroup>
+
       {currentTool === "text" ? (
         <ButtonGroup className="flex items-start">
           <select

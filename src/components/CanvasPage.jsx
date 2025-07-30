@@ -10,8 +10,6 @@ import {
   Group,
 } from "react-konva";
 import { useRef, useState, useEffect } from "react";
-import ButtonGroup from "@mui/material/ButtonGroup";
-import Button from "@mui/material/Button";
 
 function CanvasPage({
   pageId,
@@ -32,26 +30,51 @@ function CanvasPage({
   setElements,
   pages,
   setPages,
+  selectedId,
+  setSelectedId,
+  scale,
+  setScale,
 }) {
   const isFreeDrawing = useRef(false);
   const [isDrawing, setIsDrawing] = useState(false);
   const [newElement, setNewElement] = useState(null);
-  const [texts, setTexts] = useState([]);
-  const [selectedId, setSelectedId] = useState(null);
   const stageRef = useRef();
   const transformerRef = useRef();
+
+  const generateItems = () => {
+    const items = [];
+    for (let i = 0; i < 10; i++) {
+      items.push({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        id: "node-" + i,
+        color: Konva.Util.getRandomColor(),
+      });
+    }
+    return items;
+  };
+
+  const [items, setItems] = useState(generateItems());
 
   useEffect(() => {
     if (selectedId && transformerRef.current) {
       const stage = transformerRef.current.getStage();
-      const selectedNode = stage.findOne(`#text-${selectedId}`);
+      const textNode = stage.findOne(`#text-${selectedId}`);
+      const shapeNode =
+        stage.findOne(`#shape-${selectedId}`) ||
+        stage.findOne(`#rect-${selectedId}`) ||
+        stage.findOne(`#circle-${selectedId}`) ||
+        stage.findOne(`#triangle-${selectedId}`) ||
+        stage.findOne(`#arrow-${selectedId}`);
+
+      const selectedNode = textNode || shapeNode;
 
       if (selectedNode) {
         transformerRef.current.nodes([selectedNode]);
         transformerRef.current.getLayer().batchDraw();
       }
     }
-  }, [selectedId, texts]);
+  }, [selectedId, elements]);
 
   useEffect(() => {
     saveToHistory([]);
@@ -60,6 +83,9 @@ function CanvasPage({
   const handleMouseDown = (e) => {
     const { x, y } = e.target.getStage().getPointerPosition();
     const clickedOnEmpty = e.target === e.target.getStage();
+    if (e.target === e.target.getStage()) {
+      setSelectedId(null);
+    }
     if (currentTool === "rect") {
       if (!clickedOnEmpty) return;
       const rect = {
@@ -390,7 +416,6 @@ function CanvasPage({
 
         newHistory.push(clonedState);
 
-        // Update historyIndex in sync
         setHistoryIndex(newHistory.length - 1);
 
         console.log("✅ Saved to history:", newHistory);
@@ -402,8 +427,48 @@ function CanvasPage({
     });
   };
 
+  const handleDragStart = (e) => {
+    const id = e.target.name();
+    const itemsCopy = items.slice();
+    const item = itemsCopy.find((i) => i.id === id);
+    const index = itemsCopy.indexOf(item);
+    itemsCopy.splice(index, 1);
+    itemsCopy.push(item);
+    setItems(itemsCopy);
+  };
+
+  const handleWheel = (e) => {
+    e.evt.preventDefault();
+
+    const stage = stageRef.current;
+    const oldScale = stage.scaleX();
+    const pointer = stage.getPointerPosition();
+
+    // Zoom factor
+    const scaleBy = 1.05;
+    const newScale = e.evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy;
+
+    // Keep mouse position consistent while zooming
+    const mousePointTo = {
+      x: (pointer.x - stage.x()) / oldScale,
+      y: (pointer.y - stage.y()) / oldScale,
+    };
+
+    stage.scale({ x: newScale, y: newScale });
+
+    const newPos = {
+      x: pointer.x - mousePointTo.x * newScale,
+      y: pointer.y - mousePointTo.y * newScale,
+    };
+    stage.position(newPos);
+    stage.batchDraw();
+
+    setScale(newScale);
+  };
+
   return (
     <div className="flex items-center justify-center">
+      
       <Stage
         ref={stageRef}
         width={1200}
@@ -412,6 +477,9 @@ function CanvasPage({
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
+        scaleX={scale}
+        scaleY={scale}
+        onWheel={handleWheel}
       >
         <Layer>
           {[...visibleElements, ...tempElements].map((el, i) => {
@@ -498,12 +566,17 @@ function CanvasPage({
                 {el.type === "rect" && (
                   <>
                     <Rect
+                      id={`rect-${el.id}`}
                       x={el.x}
                       y={el.y}
                       width={el.width}
                       height={el.height}
                       fill={el.fill}
                       stroke="black"
+                      onClick={(e) => {
+                        e.cancelBubble = true;
+                        setSelectedId(el.id);
+                      }}
                     />
                     {!el.text?.isEditing && (
                       <Text
@@ -516,6 +589,7 @@ function CanvasPage({
                         fontFamily={el.text?.fontFamily}
                         align="center"
                         verticalAlign="middle"
+                        listening={false}
                       />
                     )}
                   </>
@@ -524,11 +598,17 @@ function CanvasPage({
                 {el.type === "circle" && (
                   <>
                     <Circle
+                      id={`circle-${el.id}`}
                       x={el.x}
                       y={el.y}
                       radius={el.radius}
                       fill={el.fill}
                       stroke="black"
+                      onClick={(e) => {
+                        e.cancelBubble = true;
+                        setSelectedId(el.id);
+                      }}
+                      onDragStart={handleDragStart}
                     />
                     {!el.text?.isEditing && (
                       <Text
@@ -550,11 +630,16 @@ function CanvasPage({
                 {el.type === "triangle" && (
                   <>
                     <Line
+                      id={`triangle-${el.id}`}
                       points={el.points}
                       closed
                       strokeWidth={2}
                       fill={el.fill}
                       opacity={100}
+                      onClick={(e) => {
+                        e.cancelBubble = true;
+                        setSelectedId(el.id);
+                      }}
                     />
                     {!el.text?.isEditing && (
                       <Text
@@ -572,9 +657,9 @@ function CanvasPage({
                     )}
                   </>
                 )}
-
                 {el.type === "arrow" && (
                   <Arrow
+                    id={`arrow-${el.id}`}
                     points={el.points}
                     fill="black"
                     stroke="black"
@@ -582,6 +667,10 @@ function CanvasPage({
                     pointerLength={10}
                     pointerWidth={10}
                     draggable
+                    onClick={(e) => {
+                      e.cancelBubble = true;
+                      setSelectedId(el.id);
+                    }}
                   />
                 )}
               </Group>
@@ -649,6 +738,7 @@ function CanvasPage({
           )}
         </Layer>
       </Stage>
+
       {/* Shapes Text Editing Mode */}
       {elements.map((el, i) => {
         if (el.type === "text" || !el.text?.isEditing) return null;

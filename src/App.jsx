@@ -1,5 +1,5 @@
 import "./App.css";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import CanvasPage from "./components/CanvasPage";
 import Toolbar from "./components/Toolbar";
 import Pages from "./components/Pages";
@@ -16,6 +16,8 @@ function App() {
   const [history, setHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [elements, setElements] = useState([]);
+  const [selectedId, setSelectedId] = useState(null);
+  const [scale, setScale] = useState(1);
   const [pages, setPages] = useState({
     1: {
       elements: [],
@@ -39,6 +41,8 @@ function App() {
           currentPageId={currentPageId}
           setCurrentPageId={setCurrentPageId}
           pageId={currentPageId}
+          elements={elements}
+          setElements={setElements}
         />
         <Toolbar
           currentTool={currentTool}
@@ -62,6 +66,10 @@ function App() {
           pageId={currentPageId}
           pages={pages}
           setPages={setPages}
+          selectedId={selectedId}
+          setSelectedId={setSelectedId}
+          scale={scale}
+          setScale={setScale}
         />
 
         <CanvasPage
@@ -85,6 +93,10 @@ function App() {
           setElements={setElements}
           pages={pages}
           setPages={setPages}
+          selectedId={selectedId}
+          setSelectedId={setSelectedId}
+          scale={scale}
+          setScale={setScale}
         />
       </section>
     </main>
