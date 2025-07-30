@@ -8,6 +8,8 @@ import CreateOutlinedIcon from "@mui/icons-material/CreateOutlined";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import EditOffOutlinedIcon from "@mui/icons-material/EditOffOutlined";
 import TextFormatIcon from "@mui/icons-material/TextFormat";
+import UndoIcon from "@mui/icons-material/Undo";
+import RedoIcon from "@mui/icons-material/Redo";
 
 import Box from "@mui/material/Box";
 import MenuItem from "@mui/material/MenuItem";
@@ -90,8 +92,8 @@ function Toolbar({
           m: 1,
         },
         "& .MuiButton-outlined": {
-          borderColor: "#bcbcbc", 
-          color: "#4b4b4b", 
+          borderColor: "#bcbcbc",
+          color: "#4b4b4b",
         },
         "& .MuiButton-outlined:hover": {
           background: "#c9c9c9",
@@ -188,10 +190,10 @@ function Toolbar({
           </Menu>
         </Box>
         <Button onClick={undo} disabled={historyIndex <= 0}>
-          Undo
+         <UndoIcon/>
         </Button>
         <Button onClick={redo} disabled={historyIndex >= history.length - 1}>
-          Redo
+          <RedoIcon/>
         </Button>
       </ButtonGroup>
       {currentTool === "text" ? (
