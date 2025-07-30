@@ -16,6 +16,18 @@ function App() {
   const [history, setHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [elements, setElements] = useState([]);
+  const [pages, setPages] = useState({
+    1: {
+      elements: [],
+      history: [],
+      historyIndex: 0,
+    },
+    2: {
+      elements: [],
+      history: [],
+      historyIndex: 0,
+    },
+  });
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-cyan-100 to-blue-200">
@@ -26,6 +38,7 @@ function App() {
         <Pages
           currentPageId={currentPageId}
           setCurrentPageId={setCurrentPageId}
+          pageId={currentPageId}
         />
         <Toolbar
           currentTool={currentTool}
@@ -46,6 +59,9 @@ function App() {
           setHistoryIndex={setHistoryIndex}
           elements={elements}
           setElements={setElements}
+          pageId={currentPageId}
+          pages={pages}
+          setPages={setPages}
         />
 
         <CanvasPage
@@ -67,6 +83,8 @@ function App() {
           setHistoryIndex={setHistoryIndex}
           elements={elements}
           setElements={setElements}
+          pages={pages}
+          setPages={setPages}
         />
       </section>
     </main>
