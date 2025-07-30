@@ -53,20 +53,9 @@ function CanvasPage({
     }
   }, [selectedId, texts]);
 
-
   useEffect(() => {
-    if (pages[pageId].history.length === 0) {
-      setPages((prev) => ({
-        ...prev,
-        [pageId]: {
-          ...prev[pageId],
-          elements: [],
-          history: [[]], 
-          historyIndex: 0,
-        },
-      }));
-    }
-  }, [pageId]);
+    saveToHistory([]);
+  }, []);
 
   const handleMouseDown = (e) => {
     const { x, y } = e.target.getStage().getPointerPosition();
@@ -293,7 +282,7 @@ function CanvasPage({
       setIsDrawing(false);
     }
   };
-  const visibleElements = pages[pageId]?.elements || [];
+  const visibleElements = elements.filter((el) => el.pageId === pageId);
   const tempElements = newElement?.pageId === pageId ? [newElement] : [];
 
   // Texteditor
@@ -381,52 +370,35 @@ function CanvasPage({
   };
 
   // Handle Undo/Redo
- // Revisit when possible
-  const saveToHistory = (currentElements) => {
-    setPages((prev) => {
-      const page = prev[pageId];
+  // Revisit when possible
+  const saveToHistory = (currentState) => {
+    setHistory((prevHistory) => {
+      const clonedState = JSON.parse(JSON.stringify(currentState));
 
-      // 1. Get ONLY current page's elements
-      const currentPageElements = currentElements.filter(
-        (el) => el.pageId === pageId
-      );
-
-      // 2. Compare with last history state
-      const lastHistoryElements =
-        page.history[page.historyIndex]?.filter((el) => el.pageId === pageId) ||
-        [];
+      const lastState =
+        prevHistory.length > 0 ? prevHistory[prevHistory.length - 1] : null;
 
       if (
-        JSON.stringify(currentPageElements) ===
-        JSON.stringify(lastHistoryElements)
+        !lastState ||
+        JSON.stringify(clonedState) !== JSON.stringify(lastState)
       ) {
-        return prev; // Skip if no changes
+        let newHistory = [...prevHistory];
+
+        if (historyIndex < prevHistory.length - 1) {
+          newHistory = newHistory.slice(0, historyIndex + 1);
+        }
+
+        newHistory.push(clonedState);
+
+        // Update historyIndex in sync
+        setHistoryIndex(newHistory.length - 1);
+
+        console.log("✅ Saved to history:", newHistory);
+        return newHistory;
       }
 
-      // 3. Create filtered history
-      const newHistory = [
-        ...page.history
-          .slice(0, page.historyIndex + 1)
-          .map((historyState) =>
-            historyState.filter((el) => el.pageId === pageId)
-          ),
-        currentPageElements,
-      ];
-
-      console.log("✅ Saved to history for page", pageId, {
-        newHistory,
-        newIndex: newHistory.length - 1,
-        elements: currentPageElements,
-      });
-
-      return {
-        ...prev,
-        [pageId]: {
-          elements: currentPageElements,
-          history: newHistory,
-          historyIndex: newHistory.length - 1,
-        },
-      };
+      console.log("⏩ No change detected, skipped save");
+      return prevHistory;
     });
   };
 

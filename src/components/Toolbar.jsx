@@ -72,47 +72,19 @@ function Toolbar({
   });
 
   const undo = () => {
-    setPages((prev) => {
-      const page = prev[pageId];
-      if (page.historyIndex <= 0) return prev;
-
-      return {
-        ...prev,
-        [pageId]: {
-          ...page,
-          elements: page.history[page.historyIndex - 1],
-          historyIndex: page.historyIndex - 1,
-        },
-      };
-    });
+    if (historyIndex <= 0) return;
+    const newIndex = historyIndex - 1;
+    const previousState = JSON.parse(JSON.stringify(history[newIndex]));
+    setElements(previousState);
+    setHistoryIndex(newIndex);
   };
 
   const redo = () => {
-    setPages((prev) => {
-      const page = prev[pageId];
-      if (page.historyIndex >= page.history.length - 1) return prev;
-
-      return {
-        ...prev,
-        [pageId]: {
-          ...page,
-          elements: page.history[page.historyIndex + 1],
-          historyIndex: page.historyIndex + 1,
-        },
-      };
-    });
-  };
-
-  const canUndo = () => {
-    if (historyIndex <= 0) return false;
-
-    return history[historyIndex - 1].some((el) => el.pageId === pageId);
-  };
-
-  const canRedo = () => {
-    if (historyIndex >= history.length - 1) return false;
-
-    return history[historyIndex + 1].some((el) => el.pageId === pageId);
+    if (historyIndex >= history.length - 1) return;
+    const newIndex = historyIndex + 1;
+    const nextState = JSON.parse(JSON.stringify(history[newIndex]));
+    setElements(nextState);
+    setHistoryIndex(newIndex);
   };
   return (
     <Box
@@ -221,16 +193,11 @@ function Toolbar({
             </MenuItem>
           </Menu>
         </Box>
-        <Button onClick={undo} disabled={pages[pageId].historyIndex <= 0}>
+        <Button onClick={undo} disabled={historyIndex <= 0}>
           <UndoIcon />
         </Button>
 
-        <Button
-          onClick={redo}
-          disabled={
-            pages[pageId].historyIndex >= pages[pageId].history.length - 1
-          }
-        >
+        <Button onClick={redo} disabled={historyIndex >= history.length - 1}>
           <RedoIcon />
         </Button>
       </ButtonGroup>
