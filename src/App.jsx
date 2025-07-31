@@ -5,13 +5,14 @@ import Toolbar from "./components/Toolbar";
 import Pages from "./components/Pages";
 import LogIn from "./components/LogIn";
 
+import { useSelector, useDispatch } from "react-redux";
+import { login, logout } from "./store/authReducer";
+
 function App() {
-  const [logIn, setLogin] = useState(
-    localStorage.getItem("isLoggedIn") === "true"
-  );
-  const [username, setUsername] = useState(
-    localStorage.getItem("username") || ""
-  );
+  const dispatch = useDispatch();
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const username = useSelector((state) => state.auth.username);
+
   const [currentTool, setCurrentTool] = useState("rect");
   const [currentPageId, setCurrentPageId] = useState(1);
   const [fillColor, setFillColor] = useState("#ff0000");
@@ -40,7 +41,7 @@ function App() {
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-cyan-100 to-blue-200">
-      {logIn ? (
+      {isLoggedIn ? (
         <div>
           <div>
             <section className="w-full w-auto h-auto p-2 bg-white rounded-2xl shadow-xl top-2">
@@ -50,11 +51,7 @@ function App() {
                 </p>
                 <button
                   onClick={() => {
-                    setLogin(false);
-                    setUsername("");
-                    setHistoryIndex(-1);
-                    setElements([]);
-                    setHistory([]);
+                    dispatch(logout());
                     localStorage.removeItem("isLoggedIn");
                     localStorage.removeItem("username");
                     localStorage.removeItem("elements");
@@ -142,8 +139,7 @@ function App() {
       ) : (
         <LogIn
           onLogin={(usernameFromForm) => {
-            setLogin(true);
-            setUsername(usernameFromForm);
+            dispatch(login(usernameFromForm));
             localStorage.setItem("isLoggedIn", "true");
             localStorage.setItem("username", usernameFromForm);
           }}
