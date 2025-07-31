@@ -26,19 +26,14 @@ function CanvasPage({
   brushSize,
   fillColor,
   hex,
-  pencilTools,
   fontSize,
-  setFontSize,
   fontFamily,
-  setFontFamily,
   history,
   setHistory,
   historyIndex,
   setHistoryIndex,
   elements,
   setElements,
-  pages,
-  setPages,
   selectedId,
   setSelectedId,
   scale,
@@ -121,25 +116,6 @@ function CanvasPage({
       localStorage.setItem("historyIndex", historyIndex);
     }
   }, [historyIndex]);
-
-  // Load history from localStorage on mount
-  // useEffect(() => {
-  //   const savedHistory = localStorage.getItem("elements");
-  //   if (savedHistory) {
-  //     setElements(JSON.parse(savedHistory));
-  //     saveToHistory(JSON.parse(savedHistory));
-  //   }
-  //   else{
-  //     saveToHistory([])
-  //   }
-  // }, []);
-
-  // // Save history to localStorage whenever it changes
-  // useEffect(() => {
-  //   if (elements.length > 0) {
-  //     localStorage.setItem("elements", JSON.stringify(elements));
-  //   }
-  // }, [elements]);
 
   const handleMouseDown = (e) => {
     const { x, y } = e.target.getStage().getPointerPosition();
@@ -526,6 +502,7 @@ function CanvasPage({
 
     setScale(newScale);
   };
+
   // Export canvas
   const handleExport = () => {
     const uri = stageRef.current.toDataURL({
@@ -544,9 +521,6 @@ function CanvasPage({
           Export PNG
         </button>
       </div>
-
-      {/* Canvas Row */}
-      <div className="flex items-center justify-center"></div>
       <Stage
         ref={stageRef}
         width={1200}

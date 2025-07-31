@@ -2,6 +2,14 @@
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
+To run the project locally,
+
+1. npm install
+2. npm run build
+3. npm run dev (to start project)
+
+Deployment can be found at :https://minenleong.github.io/drawing-board-system/
+
 Currently, two official plugins are available:
 
 - [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
