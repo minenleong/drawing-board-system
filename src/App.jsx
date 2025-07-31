@@ -52,8 +52,14 @@ function App() {
                   onClick={() => {
                     setLogin(false);
                     setUsername("");
+                    setHistoryIndex(-1);
+                    setElements([]);
+                    setHistory([]);
                     localStorage.removeItem("isLoggedIn");
                     localStorage.removeItem("username");
+                    localStorage.removeItem("elements");
+                    localStorage.removeItem("history");
+                    localStorage.removeItem("historyIndex");
                   }}
                   className="px-4 py-2 text-white rounded-lg shadow bg-indigo-600 hover:bg-red-600 transition"
                 >

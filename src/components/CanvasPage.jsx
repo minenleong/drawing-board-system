@@ -77,8 +77,60 @@ function CanvasPage({
   }, [selectedId, elements]);
 
   useEffect(() => {
-    saveToHistory([]);
+    const savedElements = localStorage.getItem("elements");
+    const savedHistory = localStorage.getItem("history");
+    const savedIndex = localStorage.getItem("historyIndex");
+
+    if (savedElements) {
+      setElements(JSON.parse(savedElements));
+    }
+    if (savedHistory) {
+      setHistory(JSON.parse(savedHistory));
+    }
+    if (savedIndex) {
+      setHistoryIndex(parseInt(savedIndex, 10));
+    }
+    if (!savedHistory) {
+      saveToHistory([]); // First entry: empty canvas
+    }
   }, []);
+
+  useEffect(() => {
+    if (elements.length > 0) {
+      localStorage.setItem("elements", JSON.stringify(elements));
+    }
+  }, [elements]);
+
+  useEffect(() => {
+    if (history.length > 0) {
+      localStorage.setItem("history", JSON.stringify(history));
+    }
+  }, [history]);
+
+  useEffect(() => {
+    if (historyIndex >= 0) {
+      localStorage.setItem("historyIndex", historyIndex);
+    }
+  }, [historyIndex]);
+
+  // Load history from localStorage on mount
+  // useEffect(() => {
+  //   const savedHistory = localStorage.getItem("elements");
+  //   if (savedHistory) {
+  //     setElements(JSON.parse(savedHistory));
+  //     saveToHistory(JSON.parse(savedHistory));
+  //   }
+  //   else{
+  //     saveToHistory([])
+  //   }
+  // }, []);
+
+  // // Save history to localStorage whenever it changes
+  // useEffect(() => {
+  //   if (elements.length > 0) {
+  //     localStorage.setItem("elements", JSON.stringify(elements));
+  //   }
+  // }, [elements]);
 
   const handleMouseDown = (e) => {
     const { x, y } = e.target.getStage().getPointerPosition();
@@ -468,7 +520,6 @@ function CanvasPage({
 
   return (
     <div className="flex items-center justify-center">
-      
       <Stage
         ref={stageRef}
         width={1200}

@@ -55,7 +55,6 @@ function Toolbar({
   const open = Boolean(anchorEl);
 
   const handleDropdownClick = (e) => {
-    console.log("currentTool", currentTool);
     setAnchorEl(e.currentTarget);
     setCurrentTool("free");
     setPencilTools("");
