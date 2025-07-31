@@ -10,6 +10,10 @@ import EditOffOutlinedIcon from "@mui/icons-material/EditOffOutlined";
 import TextFormatIcon from "@mui/icons-material/TextFormat";
 import UndoIcon from "@mui/icons-material/Undo";
 import RedoIcon from "@mui/icons-material/Redo";
+import VerticalAlignBottomIcon from "@mui/icons-material/VerticalAlignBottom";
+import VerticalAlignTopIcon from "@mui/icons-material/VerticalAlignTop";
+import SouthIcon from "@mui/icons-material/South";
+import NorthIcon from "@mui/icons-material/North";
 
 import Box from "@mui/material/Box";
 import MenuItem from "@mui/material/MenuItem";
@@ -17,6 +21,7 @@ import Menu from "@mui/material/Menu";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import Button from "@mui/material/Button";
 import { SketchPicker } from "react-color";
+import Tooltip from "@mui/material/Tooltip";
 
 function Toolbar({
   currentTool,
@@ -48,8 +53,6 @@ function Toolbar({
   const [anchorEl, setAnchorEl] = useState(null); //dropdown button
   const fontFamilies = ["Arial", "Courier New", "Georgia", "Times New Roman"];
   const open = Boolean(anchorEl);
-
-  console.log("pages", pages);
 
   const handleDropdownClick = (e) => {
     console.log("currentTool", currentTool);
@@ -173,64 +176,81 @@ function Toolbar({
       }}
     >
       <ButtonGroup variant="outlined" aria-label="Basic button group">
-        <Button
-          onClick={() => setCurrentTool("rect")}
-          sx={getButtonStyles("rect")}
-        >
-          <RectangleOutlinedIcon />
-        </Button>
-        <Button
-          onClick={() => setCurrentTool("circle")}
-          sx={getButtonStyles("circle")}
-        >
-          <CircleOutlinedIcon />
-        </Button>
-        <Button
-          onClick={() => setCurrentTool("triangle")}
-          sx={getButtonStyles("triangle")}
-        >
-          <ChangeHistoryOutlinedIcon />
-        </Button>
-        <Button
-          onClick={() => setCurrentTool("arrow")}
-          sx={getButtonStyles("arrow")}
-        >
-          <ArrowRightAltOutlinedIcon />
-        </Button>
-        <Button
-          onClick={() => setCurrentTool("text")}
-          sx={getButtonStyles("text")}
-        >
-          <TextFormatIcon />
-        </Button>
-        <Button
-          onClick={() => {
-            setCurrentTool("free");
-            setPencilTools("free");
-          }}
-          sx={getButtonStyles("free")}
-        >
-          <CreateOutlinedIcon />
-        </Button>
-        <Button
-          onClick={() => {
-            setPencilTools("eraser");
-            setCurrentTool("eraser");
-          }}
-          sx={getButtonStyles("eraser")}
-        >
-          <EditOffOutlinedIcon />
-        </Button>
-        <Box>
+        <Tooltip title="Rectangle">
           <Button
-            id="freehand-button"
-            onClick={handleDropdownClick}
-            aria-controls={open ? "freehand-menu" : undefined}
-            aria-haspopup="true"
-            aria-expanded={open ? "true" : undefined}
+            onClick={() => setCurrentTool("rect")}
+            sx={getButtonStyles("rect")}
           >
-            <ArrowDropDownIcon />
+            <RectangleOutlinedIcon />
           </Button>
+        </Tooltip>
+        <Tooltip title="Circle">
+          <Button
+            onClick={() => setCurrentTool("circle")}
+            sx={getButtonStyles("circle")}
+          >
+            <CircleOutlinedIcon />
+          </Button>
+        </Tooltip>
+        <Tooltip title="Triangle">
+          <Button
+            onClick={() => setCurrentTool("triangle")}
+            sx={getButtonStyles("triangle")}
+          >
+            <ChangeHistoryOutlinedIcon />
+          </Button>
+        </Tooltip>
+        <Tooltip title="Arrow">
+          <Button
+            onClick={() => setCurrentTool("arrow")}
+            sx={getButtonStyles("arrow")}
+          >
+            <ArrowRightAltOutlinedIcon />
+          </Button>
+        </Tooltip>
+        <Tooltip title="Textbox">
+          <Button
+            onClick={() => setCurrentTool("text")}
+            sx={getButtonStyles("text")}
+          >
+            <TextFormatIcon />
+          </Button>
+        </Tooltip>
+        <Tooltip title="Pencil">
+          <Button
+            onClick={() => {
+              setCurrentTool("free");
+              setPencilTools("free");
+            }}
+            sx={getButtonStyles("free")}
+          >
+            <CreateOutlinedIcon />
+          </Button>
+        </Tooltip>
+        <Tooltip title="Eraser">
+          <Button
+            onClick={() => {
+              setPencilTools("eraser");
+              setCurrentTool("eraser");
+            }}
+            sx={getButtonStyles("eraser")}
+          >
+            <EditOffOutlinedIcon />
+          </Button>
+        </Tooltip>
+        <Box>
+          <Tooltip title="Brush Menu">
+            <Button
+              id="freehand-button"
+              onClick={handleDropdownClick}
+              aria-controls={open ? "freehand-menu" : undefined}
+              aria-haspopup="true"
+              aria-expanded={open ? "true" : undefined}
+            >
+              <ArrowDropDownIcon />
+            </Button>
+          </Tooltip>
+
           <Menu
             id="freehand-menu"
             anchorEl={anchorEl}
@@ -261,26 +281,46 @@ function Toolbar({
             </MenuItem>
           </Menu>
         </Box>
-        <Button onClick={undo} disabled={historyIndex <= 0}>
-          <UndoIcon />
-        </Button>
-
-        <Button onClick={redo} disabled={historyIndex >= history.length - 1}>
-          <RedoIcon />
-        </Button>
-      </ButtonGroup>
-      {/* <br></br> */}
-      <ButtonGroup>
-        <Button onClick={() => bringForward(selectedId)}>Bring Forward</Button>
-        <Button onClick={() => sendBackward(selectedId)}>Send Backward</Button>
-        <Button onClick={() => bringToFront(selectedId)}>Bring to Front</Button>
-        <Button onClick={() => sendToBack(selectedId)}>
-          Send to Back
-        </Button>{" "}
+        <Tooltip title="Undo">
+          <Button onClick={undo} disabled={historyIndex <= 0}>
+            <UndoIcon />
+          </Button>
+        </Tooltip>
+        <Tooltip title="Redo">
+          <Button onClick={redo} disabled={historyIndex >= history.length - 1}>
+            <RedoIcon />
+          </Button>
+        </Tooltip>
       </ButtonGroup>
       <ButtonGroup>
-        <Button onClick={zoomIn}>+</Button>
-        <Button onClick={zoomOut}>-</Button>
+        <Tooltip title="Bring Forward">
+          <Button onClick={() => bringForward(selectedId)}>
+            <NorthIcon />
+          </Button>
+        </Tooltip>
+        <Tooltip title="Send backward">
+          <Button onClick={() => sendBackward(selectedId)}>
+            <SouthIcon />
+          </Button>
+        </Tooltip>
+        <Tooltip title="Bring to the front">
+          <Button onClick={() => bringToFront(selectedId)}>
+            <VerticalAlignTopIcon />
+          </Button>
+        </Tooltip>
+        <Tooltip title="Send to the back">
+          <Button onClick={() => sendToBack(selectedId)}>
+            <VerticalAlignBottomIcon />
+          </Button>
+        </Tooltip>
+      </ButtonGroup>
+      <ButtonGroup>
+        <Tooltip title="Zoom In">
+          <Button onClick={zoomIn}>+</Button>
+        </Tooltip>
+        <Tooltip title="Zoom Out">
+          <Button onClick={zoomOut}>-</Button>
+        </Tooltip>
       </ButtonGroup>
 
       {currentTool === "text" ? (
