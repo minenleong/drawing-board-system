@@ -11,6 +11,15 @@ import {
 } from "react-konva";
 import { useRef, useState, useEffect } from "react";
 
+function downloadURI(uri, name) {
+  const link = document.createElement("a");
+  link.download = name;
+  link.href = uri;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
 function CanvasPage({
   pageId,
   currentTool,
@@ -517,9 +526,36 @@ function CanvasPage({
 
     setScale(newScale);
   };
+  // Export canvas
+  const handleExport = () => {
+    const uri = stageRef.current.toDataURL({
+      pixelRatio: 3, // higher quality
+    });
+    downloadURI(uri, `canvas_page_${pageId}.png`);
+  };
 
   return (
     <div className="flex items-center justify-center">
+      <div>
+        <button
+          onClick={handleExport}
+          style={{
+            position: "absolute",
+            top: 320,
+            right: 30,
+            padding: "6px 12px",
+            background: "#4f46e5",
+            color: "#fff",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer",
+            zIndex: 10,
+          }}
+        >
+          Export PNG
+        </button>
+      </div>
+
       <Stage
         ref={stageRef}
         width={1200}

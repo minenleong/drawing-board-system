@@ -12,7 +12,6 @@ function App() {
   const dispatch = useDispatch();
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   const username = useSelector((state) => state.auth.username);
-
   const [currentTool, setCurrentTool] = useState("rect");
   const [currentPageId, setCurrentPageId] = useState(1);
   const [fillColor, setFillColor] = useState("#ff0000");
