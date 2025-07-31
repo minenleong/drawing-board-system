@@ -535,27 +535,18 @@ function CanvasPage({
   };
 
   return (
-    <div className="flex items-center justify-center">
-      <div>
+    <div className="flex flex-col items-center justify-center">
+      <div className="mb-2 ">
         <button
           onClick={handleExport}
-          style={{
-            position: "absolute",
-            top: 320,
-            right: 30,
-            padding: "6px 12px",
-            background: "#4f46e5",
-            color: "#fff",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer",
-            zIndex: 10,
-          }}
+          className="px-4 py-2 bg-indigo-600 text-white rounded"
         >
           Export PNG
         </button>
       </div>
 
+      {/* Canvas Row */}
+      <div className="flex items-center justify-center"></div>
       <Stage
         ref={stageRef}
         width={1200}
